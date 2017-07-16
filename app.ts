@@ -1,5 +1,5 @@
 // http://blog.csdn.net/z_sherry/article/details/64920239
-// 第 1 种方式 @yypes/包名 安装
+// 第 1 种方式 @types/包名 安装
 // @types的使用(推荐)：
 // 在自己的项目目录下运行：
 // npm install @types/库名  –-save 
