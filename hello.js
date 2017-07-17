@@ -200,13 +200,6 @@ var ErpIdentityValide2 = (function () {
 }());
 exports.ErpIdentityValide2 = ErpIdentityValide2;
 exports.gfIdentityValide = ErpIdentityValide2;
-var ErpIdentityValide3_1 = require("./ErpIdentityValide3");
-exports.RegExpBasedZipCodeValidator = ErpIdentityValide3_1.ErpIdentityValide3;
-var ErpIdentityValide3_2 = require("./ErpIdentityValide3");
-var erpValidator = new ErpIdentityValide3_2.ErpIdentityValide3();
-console.log(erpValidator);
-var _$ = require("./ErpIdentityValide3");
-var myValidate = new _$.ErpIdentityValide3();
 var com;
 (function (com) {
     var gf;

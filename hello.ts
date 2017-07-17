@@ -213,16 +213,16 @@ export { ErpIdentityValide2 as gfIdentityValide }
 // 重新导出
 // 有时候需要修改，扩展已有的模块，并重新导出给其它模块使用，可以使用重新导出做个包装
 // 导出原先的验证器但做了重命名
-export { ErpIdentityValide3 as RegExpBasedZipCodeValidator } from "./ErpIdentityValide3";
-// 或者一个模块可以包裹多个模块，并把他们导出的内容联合在一起通过语法：export * from "./module"
+// export { ErpIdentityValide3 as RegExpBasedZipCodeValidator } from "./ErpIdentityValide3";
+// // 或者一个模块可以包裹多个模块，并把他们导出的内容联合在一起通过语法：export * from "./module"
 
-// 导入 重命名
-import { ErpIdentityValide3 as ERP } from "./ErpIdentityValide3";
-let erpValidator = new ERP()
-console.log(erpValidator);
-// 导入 将整个模块导入到一个变量，并通过它来访问模块的导出部分
-import * as _$ from "./ErpIdentityValide3";
-let myValidate = new _$.ErpIdentityValide3();
+// // 导入 重命名
+// import { ErpIdentityValide3 as ERP } from "./ErpIdentityValide3";
+// let erpValidator = new ERP()
+// console.log(erpValidator);
+// // 导入 将整个模块导入到一个变量，并通过它来访问模块的导出部分
+// import * as _$ from "./ErpIdentityValide3";
+// let myValidate = new _$.ErpIdentityValide3();
 
 // 内部模块
 // 内部模块创建一个封闭的作用域，供同一个js文件内的代码使用。(也可以使用///引入其他文件的内部模块。)
