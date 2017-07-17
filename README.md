@@ -19,7 +19,11 @@
 ```
 2. 若要使用node测试编译后的js。按`F5`并选择Node.js环境，`Shift+Ctrl+F5`强制重新启动Node.js
 3. 按`Shift+Ctrl+Y`在控制台查看输出
-4. `TODO`：运用gulp等自动化构建
+4. `TODO`：运用gulp等自动化构建。（已完成gulp）
+``` shell
+npm i
+gulp watch
+```
 
 ## 在项目中使用其他tsd库的`*.d.ts`智能提示功能
 1. demo移步[app.ts](https://github.com/ReySun/typescript/blob/master/app.ts)
