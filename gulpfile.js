@@ -14,7 +14,5 @@ gulp.task('ts', function () {
 });
 // 监视此ts文件
 gulp.task('watch', function () {
-    gulp.watch('./ts-decorator.ts', function () {
-        gulp.run('ts');
-    })
+    gulp.watch('./ts-decorator.ts',['ts'])
 });
