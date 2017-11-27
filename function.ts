@@ -5,7 +5,11 @@ function max(x: number, y: number): number {
 let myMax = function (x: number, y: number): number {
     return x > y ? x : y;
 };
-
+let myAdd1: (x: number, y: number) => number =
+    function (x: number, y: number): number { return x + y; };
+    
+let myAdd2: (baseValue: number, increment: number) => number =
+    function (x: number, y: number): number { return x + y; };
 
 /* 可选参数和默认参数 */
 function buildName(firstName: string, lastName = "Smith", age?: number) {

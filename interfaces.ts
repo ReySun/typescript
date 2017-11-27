@@ -1,136 +1,167 @@
-/* 接口的作用就是为类型命名和为你的代码或第三方代码定义契约 */
+/* TypeScript的核心原则之一是对值所具有的结构进行类型检查 接口的作用就是为类型命名和为你的代码或第三方代码定义契约 */
+// 最简单判断该用readonly还是const的方法是看要把它做为变量使用还是做为一个属性。 做为变量使用的话用 const，若做为属性则使用readonly
 interface FullName {
-  firstName: string;
-  secondName: string;
-  job?: string;//可选参数
-  readonly age: number;//只读参数
+	firstName: string;
+	secondName: string;
+	job?: string;//可选参数
+	readonly age: number;//只读参数
 }
 function printLabel(name: FullName) {
-  console.log(name.firstName + "" + name.secondName);
+	console.log(name.firstName + "" + name.secondName);
 }
 let myObj = {
-  age: 10,
-  firstName: 'Jim',
-  secondName: 'Raynor'
+	age: 10,
+	firstName: 'Jim',
+	secondName: 'Raynor'
 };
 printLabel(myObj);
 
-// 数组类型 interface
+
+/* 额外的属性检查 */
+interface SquaredConfig {
+	color?: string;
+	width?: number;
+}
+function createSquare(config: SquaredConfig): { color: string; area: number } {
+	let newSquare = { color: "white", area: 100 };
+	if (config.color) {
+		// newSquare.color = config.clor; // Error: Property 'clor' does not exist on type 'SquaredConfig'
+	}
+	if (config.width) {
+		newSquare.area = config.width * config.width;
+	}
+	return newSquare;
+}
+let mySquare1 = createSquare({ color: "black" });
+// let mySquare2 = createSquare({ color: "black",  opacity: 0.5 }); //Error
+// 类型断言 多余的参数绕开这些检查
+let mySquare3 = createSquare({ width: 100, opacity: 0.5 } as SquaredConfig);
+// 任意个参数 最佳的方式是能够添加一个字符串索引签名，前提是你能够确定这个对象可能具有某些做为特殊用途使用的额外属性
+interface SquareConfigAll {
+	color?: string;
+	width?: number;
+	[propName: string]: any;
+}
+
+
+/* 函数类型 interface */
+interface SearchFunc {
+	(source: string, subString: string): boolean;
+}
+let mySearchx: SearchFunc;
+mySearchx = function (src: string, sub: string) {
+	let result = src.search(sub);
+	if (result == -1) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+
+/* 可索引的类型 */
+interface StringArray1 {
+	[index: number]: string;
+}
+
+let myArray: StringArray1;
+myArray = ["Bob", "Fred"];
+
+let myStr: string = myArray[0];
+// 错误：使用'string'索引，有时会得到Animal!
+class Animal {
+	name: string;
+}
+class Dog extends Animal {
+	breed: string;
+}
+interface NotOkay {
+	[x: string]: Animal;
+	[y: number]: Dog;
+}
+
+
+/* 数组类型 interface */
 // 数组类型具有一个index类型表示索引的类型，还有一个相应的返回值类型表示通过索引得到的元素的类型。
 // 支持两种索引类型：string和number。
 // 数组可以同时使用这两种索引类型，但是有一个限制，数字索引返回值的类型必须是字符串索引返回值的类型的子类型
+// 这个索引签名表示了当用 number去索引StringArray时会得到string类型的返回值
 interface StringArray {
-  [index: number]: string;
+	[index: number]: string;
+	length: number;    // 可以，length是number类型
+	// name: string       // 错误，不能将类型“string[]”分配给类型“StringArray”。 类型“string[]”中缺少属性“name”。
 }
 let myArrayd: StringArray;
 myArrayd = ["Bob", "Fred"];
-/* 索引签名设置为只读，这样就防止了给索引赋值 */
+// 索引签名设置为只读，这样就防止了给索引赋值
 interface ReadonlyStringArray {
-  readonly [index: number]: string;
-}
-interface NumberDictionary {
-  [index: string]: number;
-  length: number;    // 可以，length是number类型
-  xx: number;
-  // name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配
+	readonly [index: number]: string;
 }
 let readArray: ReadonlyStringArray = ["Alice", "Bob"];
-// myArray[2] = "Mallory"; // error!
-
-/* 可索引的类型 */
-// 错误：使用'string'索引，有时会得到Animal!
-class Animal {
-  name: string;
-}
-class Dog extends Animal {
-  breed: string;
-}
-interface NotOkay {
-  [x: string]: Animal;
-  [y: number]: Dog;
-}
+//  myArray[2] = "Mallory"; // error!
+// 只读数组
+let aee: number[] = [1, 2, 3, 4];
+let ro: ReadonlyArray<number> = aee;
+// ro[0] = 12; // error!
+// ro.push(5); // error!
+// ro.length = 100; // error!
+// a = ro; // error!
 
 
-/* 任意个参数 */
-interface SquareConfig {
-  color?: string;
-  width?: number;
-  [propName: string]: any;
-}
-interface SearchFunc {
-  (source: string, subString: string, opacity: 0.2): boolean;
-}
-let mySearch: SearchFunc;
-mySearch = function (src: string, sub: string) {
-  return true
-}
-
-
-/* 类静态部分与实例部分的区别 */
+/* 实现接口强制实现某种契约 类静态部分与实例部分的区别 */
+// 接口描述了类的公共部分，而不是公共和私有两部分。
 interface ClockConstructor {
-  new(hour: number, minute: number): ClockInterface;
+	new(hour: number, minute: number): ClockInterface;
 }
 interface ClockInterface {
-  tick(): any;
+	tick(): any;
 }
 function createClock(ctor: ClockConstructor, hour: number, minute: number): ClockInterface {
-  return new ctor(hour, minute);
+	return new ctor(hour, minute);
 }
 class DigitalClock implements ClockInterface {
-  constructor(h: number, m: number) { }
-  tick() {
-    console.log("beep beep");
-  }
+	constructor(h: number, m: number) { }
+	tick() {
+		console.log("beep beep");
+	}
 }
 class AnalogClock implements ClockInterface {
-  constructor(h: number, m: number) { }
-  tick() {
-    console.log("tick tock");
-  }
+	constructor(h: number, m: number) { }
+	tick() {
+		console.log("tick tock");
+	}
 }
 let digital = createClock(DigitalClock, 12, 17);
 let analog = createClock(AnalogClock, 7, 32);
 
 
-/* 函数类型 interface */
-interface SearchFunc {
-  (source: string, subString: string): boolean;
-}
-let mySearchx: SearchFunc;
-mySearchx = function (src: string, sub: string) {
-  let result = src.search(sub);
-  if (result == -1) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-
 /* 继承接口 */
 interface Shape {
-  color: string;
+	color: string;
 }
 interface PenStroke {
-  penWidth: number;
+	penWidth: number;
 }
 interface Square extends Shape, PenStroke {
-  sideLength: number;
+	sideLength: number;
 }
 let square = <Square>{};
 square.color = "blue";
 square.sideLength = 10;
 square.penWidth = 5.0;
+
+
+/* 混合类型 */
 interface Counter {
-  (start: number): string;
-  interval: number;
-  reset(): void;
+	(start: number): string;
+	interval: number;
+	reset(): void;
 }
 function getCounter(): Counter {
-  let counter = <Counter>function (start: number) { };
-  counter.interval = 123;
-  counter.reset = function () { };
-  return counter;
+	let counter = <Counter>function (start: number) { };
+	counter.interval = 123;
+	counter.reset = function () { };
+	return counter;
 }
 let c = getCounter();
 c(10);
@@ -141,13 +172,13 @@ c.interval = 5.0;
 /* 接口继承类 */
 // 当你创建了一个接口继承了一个拥有私有或受保护的成员的类时，这个接口类型只能被这个类或其子类所实现（implement）
 class Control {
-  private state: any;
+	private state: any;
 }
 interface SelectableControl extends Control {
-  select(): void;
+	select(): void;
 }
 class Button extends Control implements SelectableControl {
-  select() { }
+	select() { }
 }
 class TextBox extends Control {
 }

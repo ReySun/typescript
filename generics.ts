@@ -29,77 +29,102 @@ function loggingIdentity2<T>(arg: Array<T>): Array<T> {
 }
 
 
-/* 泛型类型  */
-// 使用不同的泛型参数名 数量上和使用方式上能对应上就可以
-function identity3<T>(arg: T): T {
-    return arg;
-}
-let myIdentity2: <U>(arg: U) => U = identity3;
-// 使用带有调用签名的对象字面量来定义泛型函数
-let myIdentity3: {<T>(arg: T): T} = identity3;
-
-
-// 泛型接口：
+/* 泛型接口 */
+/* 泛型函数的类型与非泛型函数的类型没什么不同，只是有一个类型参数在最前面，像函数声明一样 */
 interface GenericIdentityFn1 {
     <T>(arg: T): T;
 }
-function identity4<T>(arg: T): T {
+/* 泛型函数 */
+function identity3<T>(arg: T): T {
     return arg;
 }
-let myIdentity4: GenericIdentityFn1 = identity4;
-// 我们可能想把泛型参数当作整个接口的一个参数
+let myIdentity1: GenericIdentityFn1 = identity3;
+let myIdentity2: <U>(arg: U) => U = identity3;// 使用不同的泛型参数名 数量上和使用方式上能对应上就可以
+let myIdentity3: { <T>(arg: T): T } = identity3;// 使用带有调用签名的对象字面量来定义泛型函数
+// 例子
+function zip<T1, T2>(l1: T1[], l2: T2[]) {
+    //zip<T1, T2>(l1: T1[], l2: T2[]): [T1,T2][]  报错？
+    var len = Math.min(l1.length, l2.length);
+    var ret = [];
+    for (let i = 0; i < len; i++) {
+        ret.push([l1[i], l2[i]]);
+    }
+    return ret;
+}
+zip<number, string>([1, 2, 3], ['Jim', 'Sam', 'Tom'])
+
+
+/* 这引导我们去写第一个泛型接口了。 我们把上面例子里的对象字面量拿出来做为一个接口 */
 interface GenericIdentityFn2<T> {
     (arg: T): T;
 }
-function identity5<T>(arg: T): T {
-    return arg;
-}
-let myIdentity5: GenericIdentityFn2<number> = identity5;
+let myIdentity5: GenericIdentityFn2<number> = identity3;
 
 
-// 泛型类
-class GenericNumber<T> {
-    zeroValue: T;
-    add: (x: T, y: T) => T;
-}
-
-let myGenericNumber = new GenericNumber<number>();
-myGenericNumber.zeroValue = 0;
-myGenericNumber.add = function(x, y) { return x + y; };
-
-
-
-
-
-
-
+/* 泛型类 */
 class MinHeap<T>{
-  list: T[] = [];
-  add(element: T): void {
-      // ...
-      this.list.push(element)
-  }
-  min() {//min(): T 报错？
-      return this.list.length ? this.list[0] : null;
-  }
+    list: T[] = [];
+    add(element: T): void {
+        // ...
+        this.list.push(element)
+    }
+    min() {//min(): T 报错？
+        return this.list.length ? this.list[0] : null;
+    }
 }
 var heap1 = new MinHeap<number>();
-heap1.add(3);
-heap1.add(5);
-console.log(heap1.min());//3
 var heap2 = new MinHeap<string>();
-heap2.add('a');
-heap2.add('c');
-console.log(heap2.min())
 
-// 泛型也支持函数。下面zip函数声明了两个泛型类型T1T2，并把两个数组压缩到一起
-function zip<T1, T2>(l1: T1[], l2: T2[]) {
-  //zip<T1, T2>(l1: T1[], l2: T2[]): [T1,T2][]  报错？
-  var len = Math.min(l1.length, l2.length);
-  var ret = [];
-  for (let i = 0; i < len; i++) {
-      ret.push([l1[i], l2[i]]);
-  }
-  return ret;
+
+/* 泛型约束 定义一个接口来描述约束条件*/
+// 相比于操作any所有类型，我们想要限制函数去处理任意带有.length属性的所有类型。见 loggingIdentity1 和 loggingIdentity2
+// 需要传入符合约束类型的值，必须包含必须的属性
+interface Lengthwise {
+    length: number;
 }
-console.log(zip<number, string>([1, 2, 3], ['Jim', 'Sam', 'Tom']))
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);  // Now we know it has a .length property, so no more error
+    return arg;
+}
+// loggingIdentity(3);  // Error, number doesn't have a .length property
+loggingIdentity({ length: 10, value: 3 }); // 需要传入符合约束类型的值，必须包含必须的属性
+
+
+/* 在泛型约束中使用类型参数 */
+function getProperty(obj: any, key: any) {//官网 function getProperty(obj: T, key: K)报错
+    return obj[key];
+}
+
+let xx = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(xx, "a"); // okay
+getProperty(xx, "m"); // error: Argument of type 'm' isn't assignable to 'a' | 'b' | 'c' | 'd'.
+
+
+/* 在泛型里使用类类型 */
+// 在TypeScript使用泛型创建工厂函数时，需要引用构造函数的类类型
+function create<T>(c: {new(): T; }): T {
+    return new c();
+}
+// 一个更高级的例子，使用原型属性推断并约束构造函数与类实例的关系。
+class BeeKeeper {
+    hasMask: boolean;
+}
+class ZooKeeper {
+    nametag: string;
+}
+class Animals {
+    numLegs: number;
+}
+class Bee extends Animals {
+    keeper: BeeKeeper;
+}
+class Lion extends Animals {
+    keeper: ZooKeeper;
+}
+function createInstance<A extends Animals>(c: new () => A): A {
+    return new c();
+}
+createInstance(Lion).keeper.nametag;  // typechecks!
+createInstance(Bee).keeper.hasMask;   // typechecks!
