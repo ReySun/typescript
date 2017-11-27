@@ -23,21 +23,21 @@ function logMethod(target, key, descriptor) {
         console.log("Call: " + key + " \u3002(" + a + ") => " + r);
     };
 }
-var Person = (function () {
-    function Person(name, surname) {
+var Person2 = (function () {
+    function Person2(name, surname) {
         this.name = name;
         this.surname = surname;
     }
-    Person.prototype.saySomething = function (something) {
+    Person2.prototype.saySomething = function (something) {
         return this.name + " " + this.surname + " says: " + something;
     };
     __decorate([
         logMethod
-    ], Person.prototype, "saySomething", null);
-    return Person;
+    ], Person2.prototype, "saySomething", null);
+    return Person2;
 }());
-var man = new Person('ReySun', 'lly');
-var words = man.saySomething('hello gulp ts-decorator');
+var man2 = new Person2('ReySun', 'lly');
+var words = man2.saySomething('hello gulp ts-decorator');
 var Greeter = (function () {
     function Greeter(message) {
         this.greeting = message;
@@ -77,41 +77,3 @@ var C = (function () {
     ], C.prototype, "method", null);
     return C;
 }());
-var Greeter2 = (function () {
-    function Greeter2(message) {
-        this.greeting = message;
-    }
-    Greeter2.prototype.greet = function () {
-        return "Hello," + this.greeting;
-    };
-    Greeter2 = __decorate([
-        sealed
-    ], Greeter2);
-    return Greeter2;
-}());
-function sealed(constructor) {
-    console.log('===' + constructor + '===');
-    console.log(constructor.prototype);
-    console.log(constructor.prototype == Greeter2);
-    Object.seal(constructor);
-    Object.seal(constructor.prototype);
-}
-function logClass2(target) {
-    console.log('===' + target + '===');
-    console.log(target.prototype == Person2);
-}
-var Person2 = (function () {
-    function Person2(name, surname) {
-        this.name = name;
-        this.surname = surname;
-    }
-    Person2.prototype.saySomething = function (something) {
-        return this.name + " " + this.surname + " says: " + something;
-    };
-    Person2 = __decorate([
-        logClass2
-    ], Person2);
-    return Person2;
-}());
-var man = new Person2('ReySun', 'lly');
-var words = man.saySomething('hello gulp ts-decorator');
